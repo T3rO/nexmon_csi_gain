@@ -288,19 +288,18 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_recv(wlc_hw->wlc, p);
 }
 
-// void
-// wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
-//     unsigned char monitor = wl->wlc->monitor & 0xFF;
+void
+wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
+    unsigned char monitor = wl->wlc->monitor & 0xFF;
 
-//     // if (monitor) {
-//     //     last_signal = sts->signal;
-//     // }
-// }
+    // if (monitor) {
+    //     last_signal = sts->signal;
+    // }
+}
 
-// // Hook the call to wl_monitor in wlc_monitor
-// __attribute__((at(0x1a6928, "", CHIP_VER_BCM43455c0, FW_VER_7_45_154)))
-// __attribute__((at(0x1AB4F0, "", CHIP_VER_BCM43455c0, FW_VER_7_45_189)))
-// BLPatch(wl_monitor_hook, wl_monitor_hook);
+// Hook the call to wl_monitor in wlc_monitor
+__attribute__((at(0x1AB4F0, "", CHIP_VER_BCM43455c0, FW_VER_7_45_189)))
+BLPatch(wl_monitor_hook, wl_monitor_hook);
 
 __attribute__((at(0x1AAFCC, "", CHIP_VER_BCM4339, FW_VER_6_37_32_RC23_34_43_r639704)))
 __attribute__((naked))
