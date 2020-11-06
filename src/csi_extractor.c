@@ -292,9 +292,9 @@ void
 wl_monitor_hook(struct wl_info *wl, struct wl_rxsts *sts, struct sk_buff *p) {
     unsigned char monitor = wl->wlc->monitor & 0xFF;
 
-    // if (monitor) {
-    //     last_signal = sts->signal;
-    // }
+    if (monitor) {
+        last_signal = sts->signal;
+    }
 }
 
 // Hook the call to wl_monitor in wlc_monitor
