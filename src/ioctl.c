@@ -224,7 +224,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 542: // get agc value
         {
-            agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c)
+            int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
             argprintf_init(arg, agc_val);
         }
 
