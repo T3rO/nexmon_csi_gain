@@ -228,14 +228,16 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 542: // get agc value
         {
             wlc_phyreg_enter(wlc->band->pi);
-            *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, ((int *) arg)[0]);
+            *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, 0x29c);
             wlc_phyreg_exit(wlc->band->pi);
             break;
         }
         case 543: 
         {
-            int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
-            //argprintf_init(arg, agc_val);
+            wlc_phyreg_enter(wlc->band->pi);
+            int test2 =  phy_utils_read_phyreg(wlc->band->pi, 0x29c);
+            wlc_phyreg_exit(wlc->band->pi);
+            printf("test2: %s\n", test2);
             break;
         }
         case 610:
@@ -253,7 +255,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
                 wlc_phyreg_enter(wlc->band->pi);
                 *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, ((int *) arg)[0]);
                 wlc_phyreg_exit(wlc->band->pi);
-                printf("ioctl: %s\n", arg);
+                printf("test1: %s\n", arg);
                 ret = IOCTL_SUCCESS;
             }
             break;
