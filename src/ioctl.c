@@ -120,7 +120,7 @@ int
 wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
 {
     int ret = IOCTL_ERROR;
-    argprintf_init(arg, len);
+    //argprintf_init(arg, len);
 
     switch(cmd) {
         case 500:   // set csi_collect
@@ -253,6 +253,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
                 wlc_phyreg_enter(wlc->band->pi);
                 *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, ((int *) arg)[0]);
                 wlc_phyreg_exit(wlc->band->pi);
+                printf("ioctl: %s\n", arg);
                 ret = IOCTL_SUCCESS;
             }
             break;
