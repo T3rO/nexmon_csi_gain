@@ -217,16 +217,25 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 540: // disable agc
         {
-
+            break;
         }
         case 541: // enable agc
         {
-
+            int test = 1;       
+            argprintf_init(arg, test);
+            break;
         }
         case 542: // get agc value
         {
             int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
             argprintf_init(arg, agc_val);
+            break;
+        }
+        case 543: 
+        {
+            int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
+            //argprintf_init(arg, agc_val);
+            break;
         }
 
         default:
