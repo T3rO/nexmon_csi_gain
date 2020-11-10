@@ -222,21 +222,49 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 541: // enable agc
         {
             int test = 1;       
-            argprintf_init(arg, test);
+            printf("test: %s\n", test);
             break;
         }
         case 542: // get agc value
         {
-            int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
+            int agc_val = phy_reg_read(wlc->hw->band->pi, 0x29c);
             argprintf_init(arg, agc_val);
             break;
         }
         case 543: 
         {
-            int agc_val = phy_utils_read_phyreg(wlc->hw->band->pi, 0x29c);
+            int agc_val = phy_reg_read(wlc->hw->band->pi, 0x29c);
             //argprintf_init(arg, agc_val);
             break;
         }
+        case 610:
+            // writes the string from arg to the console
+            if (len > 0) {
+                arg[len-1] = 0;
+                printf("ioctl: %s\n", arg);
+                ret = IOCTL_SUCCESS; 
+            }
+            break;
+
+        case 611:
+            // reads the value from arg[0] to arg[0]
+            if(wlc->hw->up && len >= 4) {
+                wlc_phyreg_enter(wlc->band->pi);
+                *(int *) arg =  phy_reg_read(wlc->band->pi, ((int *) arg)[0]);
+                wlc_phyreg_exit(wlc->band->pi);
+                ret = IOCTL_SUCCESS;
+            }
+            break;
+
+        case 612:
+            // writes the value arg[1] to physical layer register arg[0]
+            if(wlc->hw->up && len >= 8) {
+                wlc_phyreg_enter(wlc->band->pi);
+                phy_reg_write(wlc->band->pi, ((int *) arg)[1], ((int *) arg)[0]);
+                wlc_phyreg_exit(wlc->band->pi);
+                ret = IOCTL_SUCCESS;
+            }
+            break;
 
         default:
             ret = wlc_ioctl(wlc, cmd, arg, len, wlc_if);

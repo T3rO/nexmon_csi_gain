@@ -55,7 +55,7 @@
 
 AT(CHIP_VER_BCM43455c0, FW_VER_7_45_189, 0x1df5a8)
 int
-phy_utils_read_phyreg(void *pi, int addr)
+phy_reg_read(void *pi, int addr)
 RETURN_DUMMY
 
 #undef VOID_DUMMY
