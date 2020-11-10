@@ -60,6 +60,7 @@
 #include <firmware_version.h>   // definition of firmware version macros
 #include <debug.h>              // contains macros to access the debug hardware
 #include <wrapper.h>            // wrapper definitions for functions that already exist in the firmware
+#include <local_wrapper.h>
 #include <structs.h>            // structures that are used by the code in the firmware
 #include <helper.h>             // useful helper functions
 #include <patcher.h>            // macros used to craete patches such as BLPatch, BPatch, ...
