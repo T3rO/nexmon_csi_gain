@@ -122,6 +122,8 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
     int ret = IOCTL_ERROR;
     //argprintf_init(arg, len);
 
+    struct phy_info *pi = wlc->hw->band->pi;
+
     switch(cmd) {
         case 500:   // set csi_collect
         {
@@ -232,17 +234,17 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 542: // get agc value
         {
-            wlc_phyreg_enter(wlc->band->pi);
-            *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, 0x29c);
-            wlc_phyreg_exit(wlc->band->pi);
+            wlc_phyreg_enter(pi);
+            *(int *) arg =  phy_utils_read_phyreg(pi, 0x29c);
+            wlc_phyreg_exit(pi);
             ret = IOCTL_SUCCESS;
             break;
         }
         case 543: 
         {
-            wlc_phyreg_enter(wlc->band->pi);
-            int test2 =  phy_utils_read_phyreg(wlc->band->pi, 0x29c);
-            wlc_phyreg_exit(wlc->band->pi);
+            wlc_phyreg_enter(pi);
+            int test2 =  phy_utils_read_phyreg(pi, 0x29c);
+            wlc_phyreg_exit(pi);
             printf("test2: %s\n", test2);
             ret = IOCTL_SUCCESS;
             break;
@@ -261,10 +263,9 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         {
             // reads the value from arg[0] to arg[0]
             if(wlc->hw->up && len >= 4) {
-                wlc_phyreg_enter(wlc->band->pi);
-                *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, ((int *) arg)[0]);
-                wlc_phyreg_exit(wlc->band->pi);
-                printf("test1: %s\n", arg);
+                wlc_phyreg_enter(pi);
+                *(int *) arg =  phy_utils_read_phyreg(pi, ((int *) arg)[0]);
+                wlc_phyreg_exit(pi);
                 ret = IOCTL_SUCCESS;
             }
             break;
@@ -282,14 +283,15 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 613:
         {
-            // reads the value from arg[0] to arg[0]
-            wlc_phyreg_enter(wlc->band->pi);
-            *(int *) arg =  phy_utils_read_phyreg(wlc->band->pi, ((int *) arg)[0]);
-            wlc_phyreg_exit(wlc->band->pi);
-            ret = IOCTL_SUCCESS;
+            if(wlc->hw->up) {
+                wlc_phyreg_enter(pi);
+                *(int *) arg =  phy_utils_read_phyreg(pi, ((int *) arg)[0]);
+                wlc_phyreg_exit(pi);
+                printf("test1: %s\n", arg);
+                ret = IOCTL_SUCCESS;
+            }
             break;
         }
-            
 
         default:
             ret = wlc_ioctl(wlc, cmd, arg, len, wlc_if);
