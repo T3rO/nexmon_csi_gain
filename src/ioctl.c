@@ -217,6 +217,10 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 540: // disable agc
         {
+            set_scansuppress(wlc, 1);
+            // deactivate minimum power consumption
+            set_mpc(wlc, 0);
+            ret = IOCTL_SUCCESS;
             break;
         }
         case 541: // enable agc
