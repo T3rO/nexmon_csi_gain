@@ -316,6 +316,39 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             break;
         }
 
+        case 615:
+        {
+            // reads the value from arg[0] to arg[0]
+            if(wlc->hw->up) {
+                wlc_phyreg_enter(pi);
+                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+                *(int *) arg =  phy_utils_read_phyreg(pi, 170);
+
+                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+                wlc_phyreg_exit(pi);
+                
+            }
+            ret = IOCTL_SUCCESS;
+            break;
+        }
+        case 616:
+        {
+            // reads the value from arg[0] to arg[0]
+            if(wlc->hw->up) {
+                wlc_phyreg_enter(pi);
+                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+                *(int *) arg =  phy_utils_read_phyreg(pi, 0xAA);
+
+                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+                wlc_phyreg_exit(pi);
+                
+            }
+            ret = IOCTL_SUCCESS;
+            break;
+        }
+
         default:
             ret = wlc_ioctl(wlc, cmd, arg, len, wlc_if);
     }
