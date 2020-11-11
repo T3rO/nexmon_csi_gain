@@ -235,17 +235,30 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 542: // get agc value
         {
             wlc_phyreg_enter(pi);
+            //wlc_suspend_mac_and_wait(wlc);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
             *(int *) arg =  phy_utils_read_phyreg(pi, 0x29c);
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            //wlc_enable_mac(wlc);
             wlc_phyreg_exit(pi);
+
             ret = IOCTL_SUCCESS;
             break;
         }
         case 543: 
         {
             wlc_phyreg_enter(pi);
-            int test2 =  phy_utils_read_phyreg(pi, 0x29c);
+            //wlc_suspend_mac_and_wait(wlc);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+            
+            *(int *) arg =  phy_utils_read_phyreg(pi, 0x0);
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            //wlc_enable_mac(wlc);
             wlc_phyreg_exit(pi);
-            printf("test2: %s\n", test2);
+
             ret = IOCTL_SUCCESS;
             break;
         }
