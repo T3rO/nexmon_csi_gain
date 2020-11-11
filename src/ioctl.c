@@ -348,7 +348,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 616:
+        case 617:
         {
             // reads the value from arg[0] to arg[0]
             if(wlc->hw->up) {
