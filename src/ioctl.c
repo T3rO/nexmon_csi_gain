@@ -120,7 +120,7 @@ int
 wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
 {
     int ret = IOCTL_ERROR;
-    //argprintf_init(arg, len);
+    argprintf_init(arg, len);
 
     struct phy_info *pi = wlc->hw->band->pi;
 
@@ -228,7 +228,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 541: // enable agc
         {
             int test = 1;       
-            printf("test: %s\n", test);
+            printf("test");
             ret = IOCTL_SUCCESS;
             break;
         }
@@ -301,13 +301,18 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 613:
         {
+            // reads the value from arg[0] to arg[0]
             if(wlc->hw->up) {
                 wlc_phyreg_enter(pi);
-                *(int *) arg =  phy_utils_read_phyreg(pi, ((int *) arg)[0]);
+                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+                *(int *) arg =  phy_utils_read_phyreg(pi, arg[0]);
+
+                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
                 wlc_phyreg_exit(pi);
-                printf("test1: %s\n", arg);
-                ret = IOCTL_SUCCESS;
+                
             }
+            ret = IOCTL_SUCCESS;
             break;
         }
 
