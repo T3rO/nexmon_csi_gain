@@ -275,12 +275,17 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 611:
         {
             // reads the value from arg[0] to arg[0]
-            if(wlc->hw->up && len >= 4) {
+            if(wlc->hw->up) {
                 wlc_phyreg_enter(pi);
+                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
                 *(int *) arg =  phy_utils_read_phyreg(pi, ((int *) arg)[0]);
+
+                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
                 wlc_phyreg_exit(pi);
-                ret = IOCTL_SUCCESS;
+                
             }
+            ret = IOCTL_SUCCESS;
             break;
         }
         case 612:
