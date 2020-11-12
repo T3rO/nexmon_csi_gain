@@ -219,7 +219,6 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 540: // disable agc
         {
-            set_scansuppress(wlc, 1);
             // deactivate minimum power consumption
             set_mpc(wlc, 0);
             ret = IOCTL_SUCCESS;
@@ -227,38 +226,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 541: // enable agc
         {
-            int test = 1;       
-            printf("test");
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 542: // get agc value
-        {
-            wlc_phyreg_enter(pi);
-            //wlc_suspend_mac_and_wait(wlc);
-            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-            *(int *) arg =  phy_utils_read_phyreg(pi, 0x29c);
-
-            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-            //wlc_enable_mac(wlc);
-            wlc_phyreg_exit(pi);
-
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 543: 
-        {
-            wlc_phyreg_enter(pi);
-            //wlc_suspend_mac_and_wait(wlc);
-            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
             
-            *(int *) arg =  phy_utils_read_phyreg(pi, 0x0);
-
-            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-            //wlc_enable_mac(wlc);
-            wlc_phyreg_exit(pi);
-
             ret = IOCTL_SUCCESS;
             break;
         }
@@ -302,65 +270,15 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         case 613:
         {
             // reads the value from arg[0] to arg[0]
-            if(wlc->hw->up) {
-                wlc_phyreg_enter(pi);
-                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+            
+            wlc_phyreg_enter(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-                *(int *) arg =  phy_utils_read_phyreg(pi, arg[0]);
+            *(int *) arg =  phy_utils_read_phyreg(pi, ((int *) arg)[0]);
 
-                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-                wlc_phyreg_exit(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            wlc_phyreg_exit(pi);
                 
-            }
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-
-        case 615:
-        {
-            // reads the value from arg[0] to arg[0]
-            if(wlc->hw->up) {
-                wlc_phyreg_enter(pi);
-                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-                *(int *) arg =  phy_utils_read_phyreg(pi, 120);
-
-                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-                wlc_phyreg_exit(pi);
-                
-            }
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 616:
-        {
-            // reads the value from arg[0] to arg[0]
-            if(wlc->hw->up) {
-                wlc_phyreg_enter(pi);
-                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-                *(int *) arg =  phy_utils_read_phyreg(pi, 0x78);
-
-                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-                wlc_phyreg_exit(pi);
-                
-            }
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 617:
-        {
-            // reads the value from arg[0] to arg[0]
-            if(wlc->hw->up) {
-                wlc_phyreg_enter(pi);
-                wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-                *(int *) arg =  phy_utils_read_phyreg(pi, 0x58);
-
-                wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-                wlc_phyreg_exit(pi);
-                
-            }
             ret = IOCTL_SUCCESS;
             break;
         }
