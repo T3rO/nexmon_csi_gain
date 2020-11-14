@@ -296,7 +296,7 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_phyreg_enter(wlc_hw->band->pi);
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 1);
 
-    wlc_phy_table_read_acphy(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
+    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
 
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 0);
     wlc_phyreg_exit(wlc_hw->band->pi);
