@@ -59,6 +59,7 @@
 
 #include <firmware_version.h>
 #include <wrapper.h>
+#include <local_wrapper.h>
 #include <structs.h>
 #include <patcher.h>
 #include <helper.h>
