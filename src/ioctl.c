@@ -230,6 +230,13 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
+        case 545: // read lna1 gain
+        {
+            
+
+            ret = IOCTL_SUCCESS;
+            break;
+        }
         case 610:
         {
             // writes the string from arg to the console

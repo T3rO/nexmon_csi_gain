@@ -142,6 +142,10 @@ struct csi_udp_frame {
     uint16 csiconf;
     uint16 chanspec;
     uint16 chip;
+    int8 lna1Gain;
+    int8 lna2Gain;
+    int8 mixGain;
+    int8 placeholder1;
     uint32 csi_values[];
 } __attribute__((packed));
 
@@ -152,6 +156,8 @@ uint16 inserted_csi_values = 0;
 struct sk_buff *p_csi = 0;
 int8 last_rssi = 0;
 uint16 phystatus[6] = {0,0,0,0, 0, 0};
+int8 last_lna1_gain = 0;
+int8 last_mix_gain = 0;
 
 void
 create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
@@ -172,6 +178,10 @@ create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
     udpfrm->csiconf = csiconf;
     udpfrm->chanspec = get_chanspec(wl->wlc);
     udpfrm->chip = NEXMON_CHIP;
+    udpfrm->lna1Gain = last_lna1_gain;
+    udpfrm->lna2Gain = 0;
+    udpfrm->mixGain = 0;
+    udpfrm->placeholder1 = 0;
 }
 
 void
@@ -282,6 +292,16 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     last_rssi = wlc_rxhdr->rssi;
     struct d11rxhdr  * rxh = &wlc_rxhdr->rxhdr;
     memcpy(phystatus, &rxh->PhyRxStatus_0, sizeof(phystatus));
+
+    wlc_phyreg_enter(wlc_hw->band->pi);
+    wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 1);
+
+    wlc_phy_table_read_acphy(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
+
+    wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 0);
+    wlc_phyreg_exit(wlc_hw->band->pi);
+
+
     wlc_recv(wlc_hw->wlc, p);
 }
 
