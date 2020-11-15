@@ -143,10 +143,16 @@ struct csi_udp_frame {
     uint16 csiconf;
     uint16 chanspec;
     uint16 chip;
+    int8 elnaGain;
     int8 lna1Gain;
     int8 lna2Gain;
     int8 mixGain;
-    int8 placeholder1;
+    int8 lpf0;
+    int8 lpf1;
+    int8 dvga;
+    int8 trLoss;
+    int16 agcGain;
+    int16 placeholder1;
     uint32 csi_values[];
 } __attribute__((packed));
 
@@ -157,8 +163,15 @@ uint16 inserted_csi_values = 0;
 struct sk_buff *p_csi = 0;
 int8 last_rssi = 0;
 uint16 phystatus[6] = {0,0,0,0, 0, 0};
+int8 last_elna_gain = 0;
 int8 last_lna1_gain = 0;
+int8 last_lna2_gain = 0;
 int8 last_mix_gain = 0;
+int8 last_lpf0_gain = 0;
+int8 last_lpf1_gain = 0;
+int8 last_dvga_gain = 0;
+int8 last_tr_loss = 0;
+int16 last_agc_gain = 0;
 
 void
 create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
@@ -179,9 +192,15 @@ create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
     udpfrm->csiconf = csiconf;
     udpfrm->chanspec = get_chanspec(wl->wlc);
     udpfrm->chip = NEXMON_CHIP;
+    udpfrm->elnaGain = last_elna_gain;
     udpfrm->lna1Gain = last_lna1_gain;
-    udpfrm->lna2Gain = 0;
-    udpfrm->mixGain = 0;
+    udpfrm->lna2Gain = last_lna2_gain;
+    udpfrm->mixGain = last_mix_gain;
+    udpfrm->lpf0 = last_lpf0_gain;
+    udpfrm->lpf1 = last_lpf1_gain;
+    udpfrm->dvga = last_dvga_gain;
+    udpfrm->trLoss = last_tr_loss;
+    udpfrm->agcGain = last_agc_gain;
     udpfrm->placeholder1 = 0;
 }
 
@@ -297,7 +316,20 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_phyreg_enter(wlc_hw->band->pi);
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 1);
 
+    // elna
+    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x0 + (0)), 8, &last_elna_gain);
+
+    // lna1
     wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
+
+    // mixer
+    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x20 + 2), 8, &last_gain_mix);
+
+    // trLoss
+    last_tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289)
+
+    // agc Gain
+    last_agc_gain = phy_utils_read_phyreg(wlc_hw->band->pi, 0x3b3)
 
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 0);
     wlc_phyreg_exit(wlc_hw->band->pi);
