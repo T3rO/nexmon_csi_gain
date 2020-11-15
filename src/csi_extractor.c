@@ -323,7 +323,7 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
 
     // mixer
-    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x20 + 2), 8, &last_gain_mix);
+    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x20 + 2), 8, &last_mix_gain);
 
     // trLoss
     last_tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289);
