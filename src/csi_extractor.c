@@ -326,10 +326,10 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x20 + 2), 8, &last_gain_mix);
 
     // trLoss
-    last_tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289)
+    last_tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289);
 
     // agc Gain
-    last_agc_gain = phy_utils_read_phyreg(wlc_hw->band->pi, 0x3b3)
+    last_agc_gain = phy_utils_read_phyreg(wlc_hw->band->pi, 0x3b3);
 
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 0);
     wlc_phyreg_exit(wlc_hw->band->pi);
