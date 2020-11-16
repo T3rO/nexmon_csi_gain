@@ -229,7 +229,21 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
+            // dot11acConfig
             phy_reg_write(pi, 0x1f5, 0);
+
+            // ACPHY_HPFBWovrdigictrl_HTAGC_HPFBW
+            phy_utils_mod_phyreg(pi, 0x1f6, 0x1, 0);
+            phy_utils_mod_phyreg(pi, 0x1f6, 0x2, 0);
+            // ACPHY_HPFBWovrdigictrl_VHTAGC_HPFBW
+            phy_utils_mod_phyreg(pi, 0x1f6, 0x10, 0);
+            phy_utils_mod_phyreg(pi, 0x1f6, 0x20, 0);
+
+            // ACPHY_RadarBlankCtrl_radarHtAgcBlankEn
+            phy_utils_mod_phyreg(pi, 0x250, 0x2000, 0);
+
+            // singleShotAgcCtrl
+            phy_utils_mod_phyreg(pi, 0x29c, 0x8000, 1);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
