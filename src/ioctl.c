@@ -217,16 +217,23 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             }
             break;
         }
-        case 540: // disable agc
+        case 540: // setup
         {
             // deactivate minimum power consumption
             set_mpc(wlc, 0);
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 541: // enable agc
+        case 541: // disable agc
         {
-            
+            wlc_phyreg_enter(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+            phy_reg_write(pi, 0x1f5, 0);
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            wlc_phyreg_exit(pi);
+
             ret = IOCTL_SUCCESS;
             break;
         }
