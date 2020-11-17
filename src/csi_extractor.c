@@ -143,14 +143,14 @@ struct csi_udp_frame {
     uint16 csiconf;
     uint16 chanspec;
     uint16 chip;
-    int8 elnaGain;
-    int8 lna1Gain;
-    int8 lna2Gain;
-    int8 mixGain;
-    int8 lpf0;
-    int8 lpf1;
-    int8 dvga;
-    int8 trLoss;
+    int8 elnaGain[6];
+    int8 lna1Gain[6];
+    int8 lna2Gain[6];
+    int8 mixGain[6];
+    int8 lpf0[6];
+    int8 lpf1[6];
+    int8 dvga[6];
+    int8 trLoss[6];
     int16 agcGain;
     int16 placeholder1;
     uint32 csi_values[];
@@ -163,14 +163,24 @@ uint16 inserted_csi_values = 0;
 struct sk_buff *p_csi = 0;
 int8 last_rssi = 0;
 uint16 phystatus[6] = {0,0,0,0, 0, 0};
-int8 last_elna_gain = 0;
-int8 last_lna1_gain = 0;
-int8 last_lna2_gain = 0;
-int8 last_mix_gain = 0;
-int8 last_lpf0_gain = 0;
-int8 last_lpf1_gain = 0;
-int8 last_dvga_gain = 0;
-int8 last_tr_loss = 0;
+
+int8 elna_gain = 0;
+int8 lna1_gain = 0;
+int8 lna2_gain = 0;
+int8 mix_gain = 0;
+int8 lpf0_gain = 0;
+int8 lpf1_gain = 0;
+int8 dvga_gain = 0;
+int8 tr_loss = 0;
+
+int8 last_elna_gain[6] = {0,0,0,0,0,0};
+int8 last_lna1_gain[6] = {0,0,0,0,0,0};
+int8 last_lna2_gain[6] = {0,0,0,0,0,0};
+int8 last_mix_gain[6] = {0,0,0,0,0,0};
+int8 last_lpf0_gain[6] = {0,0,0,0,0,0};
+int8 last_lpf1_gain[6] = {0,0,0,0,0,0};
+int8 last_dvga_gain[6] = {0,0,0,0,0,0};
+int8 last_tr_loss[6] = {0,0,0,0,0,0};
 int16 last_agc_gain = 0;
 
 void
@@ -192,16 +202,123 @@ create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
     udpfrm->csiconf = csiconf;
     udpfrm->chanspec = get_chanspec(wl->wlc);
     udpfrm->chip = NEXMON_CHIP;
-    udpfrm->elnaGain = last_elna_gain;
-    udpfrm->lna1Gain = last_lna1_gain;
-    udpfrm->lna2Gain = last_lna2_gain;
-    udpfrm->mixGain = last_mix_gain;
-    udpfrm->lpf0 = last_lpf0_gain;
-    udpfrm->lpf1 = last_lpf1_gain;
-    udpfrm->dvga = last_dvga_gain;
-    udpfrm->trLoss = last_tr_loss;
+    int i;
+    for (i = 0; i < 6; i ++) {
+        udpfrm->elnaGain[i] = last_elna_gain[i];
+        udpfrm->lna1Gain[i] = last_lna1_gain[i];
+        udpfrm->lna2Gain[i] = last_lna2_gain[i];
+        udpfrm->mixGain[i] = last_mix_gain[i];
+        udpfrm->lpf0[i] = last_lpf0_gain[i];
+        udpfrm->lpf1[i] = last_lpf1_gain[i];
+        udpfrm->dvga[i] = last_dvga_gain[i];
+        udpfrm->trLoss[i] = last_tr_loss[i];
+    }
     udpfrm->agcGain = last_agc_gain;
     udpfrm->placeholder1 = 0;
+}
+
+void
+get_rx_gains(struct phy_info *pi, uint8 gain_type){
+    uint16 code_A;
+    uint16 code_B;
+
+    if(gain_type == 4){ // lo
+        code_A = phy_utils_read_phyreg(pi, 0x6e2);
+        code_B = phy_utils_read_phyreg(pi, 0x6e3);
+    } 
+    else if (gain_type == 3){ // md
+        code_A = phy_utils_read_phyreg(pi, 0x6e0);
+        code_B = phy_utils_read_phyreg(pi, 0x6e1);
+    }
+    else if (gain_type == 2){ // hi
+        code_A = phy_utils_read_phyreg(pi, 0x6de);
+        code_B = phy_utils_read_phyreg(pi, 0x6df);
+    }
+    else if (gain_type == 1){ // init
+        code_A = phy_utils_read_phyreg(pi, 0x6dc);
+        code_B = phy_utils_read_phyreg(pi, 0x6dd);
+    }
+    else if (gain_type == 7 || gain_type == 8){ // initGain Code from pi
+
+    }
+    else if (gain_type == 9){ // low power (?)
+        code_A = 0x16a;
+        code_B = 0x554;
+    }
+    else if (gain_type == 10){ 
+        code_A = phy_utils_read_phyreg(pi,0x692);
+        code_A = (code_A & 0x7fff) << 1;
+        code_B = phy_utils_read_phyreg(pi,0x691);
+        code_B = 0xffff000 & code_B << 10 & 0xf378 | (code_B & 1) << 3 | (code_A >> 0xe) << 8 | code_A >> 7 & 0x70; // questionable 
+    }
+
+    uint8 lna1Byp = (code_B >> 1) & 1;
+    if(lna1Byp != 0){   // if code_B indicates lna1 Bypass, check in lna1BypVals if it is enabled
+        uint8 lna1BypEn = phy_utils_read_phyreg(pi, 0x6fa);
+        lna1BypEn = lna1BypEn & 1;
+        if(lna1BypEn == 0){
+            lna1Byp = 0;
+        }
+    }
+
+    uint8 lna1_code = 0;
+    if(lna1Byp == 0){
+        lna1_code = (code_A >> 1) & 7;
+    }else{
+        uint8 lna1BypVals = phy_utils_read_phyreg(pi, 0x6fa);
+        lna1_code = (lna1BypVals & 0xe) >> 1;
+    }
+
+    uint8 lna2_code = (code_A >> 4) & 7;
+    uint8 mix_code = (code_A >> 7) & 0xf;
+    uint8 lpf0_code = (code_B >> 4) & 7;
+    uint8 lpf1_code = (code_B >> 8) & 7;
+    uint8 dvga_code = (code_B >> 0xc) & 0xf;
+    uint8 tr_tx_index = (code_B >> 3) & 1;
+
+    // read elna
+    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x0 + (code_A & 0x1)), 8, &elna_gain);
+
+    // read lna1
+    if(lna1Byp == 0){
+        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x8 + lna1_code), 8, &gain_lna1);
+    }
+    else{
+        uint8 lna1BypVals = phy_utils_read_phyreg(pi, 0x6fa);
+        gain_lna1 = (lna1BypVals >> 4) & 0xff;
+    }
+    
+    // Todo: read lna2 from pi_ac gaintable
+
+    // read mix
+    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x20 + mix_code), 8, &gain_mix);
+
+    lpf0_gain = lpf0_code * 3;
+    if(gain_type < 10){
+        lpf1_gain = lpf1_code * 3;
+    } else{
+        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x70 + lpf1_code), 8, &lpf1_gain);
+    }
+
+    dvga_gain = dvga_code * 3;
+
+    if(gain_type == 4){ // Todo: also check for gain_type == 3 && pi_ac->mdgain_trtx_allowed
+        tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x6f9);
+    }else{
+        tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289);
+    }
+    tr_loss = tr_loss & 0x7f;
+}
+
+void assign_rx_gains(uint8 index){
+    last_elna_gain[index] = elna_gain;
+    last_lna1_gain[index] = lna1_gain;
+    last_lna2_gain[index] = lna2_gain;
+    last_mix_gain[index] = mix_gain;
+    last_lpf0_gain[index] = lpf0_gain;
+    last_lpf1_gain[index] = lpf1_gain;
+    last_dvga_gain[index] = dvga_gain;
+    last_tr_loss[index] = tr_loss;
 }
 
 void
@@ -316,17 +433,19 @@ process_frame_hook(struct sk_buff *p, struct wlc_d11rxhdr *wlc_rxhdr, struct wlc
     wlc_phyreg_enter(wlc_hw->band->pi);
     wlc_phy_stay_in_carriersearch_acphy(wlc_hw->band->pi, 1);
 
-    // elna
-    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x0 + (0)), 8, &last_elna_gain);
-
-    // lna1
-    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x8 + 5), 8, &last_lna1_gain);
-
-    // mixer
-    wlc_phy_table_read_acphy_rp(wlc_hw->band->pi, 0x44, 1, (0x20 + 2), 8, &last_mix_gain);
-
-    // trLoss
-    last_tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289);
+    // rx gains for different gain modes
+    get_rx_gains(wlc_hw->band->pi, 1);
+    assign_rx_gains(0);
+    get_rx_gains(wlc_hw->band->pi, 2);
+    assign_rx_gains(1);
+    get_rx_gains(wlc_hw->band->pi, 3);
+    assign_rx_gains(2);
+    get_rx_gains(wlc_hw->band->pi, 4);
+    assign_rx_gains(3);
+    get_rx_gains(wlc_hw->band->pi, 9);
+    assign_rx_gains(4);
+    get_rx_gains(wlc_hw->band->pi, 10);
+    assign_rx_gains(5);
 
     // agc Gain
     last_agc_gain = phy_utils_read_phyreg(wlc_hw->band->pi, 0x3b3) & 0x1f;
