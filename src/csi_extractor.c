@@ -219,8 +219,8 @@ create_new_csi_frame(struct wl_info *wl, uint16 csiconf, int length)
 
 void
 get_rx_gains(struct phy_info *pi, uint8 gain_type){
-    uint16 code_A;
-    uint16 code_B;
+    uint16 code_A = 0;
+    uint16 code_B = 0;
 
     if(gain_type == 4){ // lo
         code_A = phy_utils_read_phyreg(pi, 0x6e2);
