@@ -277,11 +277,11 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     uint8 tr_tx_index = (code_B >> 3) & 1;
 
     // read elna
-    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x0 + (code_A & 0x1)), 8, &elna_gain);
+    wlc_phy_table_read_acphy_rp(pi, 0x44, 1, (0x0 + (code_A & 0x1)), 8, &elna_gain);
 
     // read lna1
     if(lna1Byp == 0){
-        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x8 + lna1_code), 8, &lna1_gain);
+        wlc_phy_table_read_acphy_rp(pi, 0x44, 1, (0x8 + lna1_code), 8, &lna1_gain);
     }
     else{
         uint8 lna1BypVals = phy_utils_read_phyreg(pi, 0x6fa);
@@ -291,13 +291,13 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     // Todo: read lna2 from pi_ac gaintable
 
     // read mix
-    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x20 + mix_code), 8, &mix_gain);
+    wlc_phy_table_read_acphy_rp(pi, 0x44, 1, (0x20 + mix_code), 8, &mix_gain);
 
     lpf0_gain = lpf0_code * 3;
     if(gain_type < 10){
         lpf1_gain = lpf1_code * 3;
     } else{
-        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x70 + lpf1_code), 8, &lpf1_gain);
+        wlc_phy_table_read_acphy_rp(pi, 0x44, 1, (0x70 + lpf1_code), 8, &lpf1_gain);
     }
 
     dvga_gain = dvga_code * 3;
