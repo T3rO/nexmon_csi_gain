@@ -249,7 +249,7 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
         code_A = phy_utils_read_phyreg(pi,0x692);
         code_A = (code_A & 0x7fff) << 1;
         code_B = phy_utils_read_phyreg(pi,0x691);
-        code_B = 0xffff000 & code_B << 10 & 0xf378 | (code_B & 1) << 3 | (code_A >> 0xe) << 8 | code_A >> 7 & 0x70; // questionable 
+        code_B = ((0xffff000 & (code_B << 10)) & 0xf378) | ((code_B & 1) << 3) | ((code_A >> 0xe) << 8) | ((code_A >> 7) & 0x70); // questionable 
     }
 
     uint8 lna1Byp = (code_B >> 1) & 1;
@@ -281,7 +281,7 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
 
     // read lna1
     if(lna1Byp == 0){
-        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x8 + lna1_code), 8, &gain_lna1);
+        wlc_phy_table_read_acphy(pi, 0x44, 1, (0x8 + lna1_code), 8, &lna1_gain);
     }
     else{
         uint8 lna1BypVals = phy_utils_read_phyreg(pi, 0x6fa);
@@ -291,7 +291,7 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     // Todo: read lna2 from pi_ac gaintable
 
     // read mix
-    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x20 + mix_code), 8, &gain_mix);
+    wlc_phy_table_read_acphy(pi, 0x44, 1, (0x20 + mix_code), 8, &mix_gain);
 
     lpf0_gain = lpf0_code * 3;
     if(gain_type < 10){
@@ -303,9 +303,9 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     dvga_gain = dvga_code * 3;
 
     if(gain_type == 4){ // Todo: also check for gain_type == 3 && pi_ac->mdgain_trtx_allowed
-        tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x6f9);
+        tr_loss = phy_utils_read_phyreg(pi, 0x6f9);
     }else{
-        tr_loss = phy_utils_read_phyreg(wlc_hw->band->pi, 0x289);
+        tr_loss = phy_utils_read_phyreg(pi, 0x289);
     }
     tr_loss = tr_loss & 0x7f;
 }
