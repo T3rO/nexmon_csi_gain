@@ -285,7 +285,7 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     }
     else{
         uint8 lna1BypVals = phy_utils_read_phyreg(pi, 0x6fa);
-        gain_lna1 = (lna1BypVals >> 4) & 0xff;
+        lna1_gain = (lna1BypVals >> 4) & 0xff;
     }
     
     // Todo: read lna2 from pi_ac gaintable
