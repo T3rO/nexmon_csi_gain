@@ -288,8 +288,8 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
         lna1_gain = (lna1BypVals >> 4) & 0xff;
     }
     
-    // Todo: read lna2 from pi_ac gaintable
-
+    lna2_gain = lna2_code; // This is only the lna2 gain code. Todo: read lna2 gain from pi_ac gaintable
+    
     // read mix
     wlc_phy_table_read_acphy_rp(pi, 0x44, 1, (0x20 + mix_code), 8, &mix_gain);
 
