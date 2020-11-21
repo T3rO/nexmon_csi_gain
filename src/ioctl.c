@@ -342,7 +342,20 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-            phy_reg_write(pi, 0x6e8, 0x379f);
+            phy_reg_write(pi, 0x6e8, 0x349f);
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            wlc_phyreg_exit(pi);
+
+            ret = IOCTL_SUCCESS;
+            break;
+        }
+        case 549: // programm gain limit tables
+        {
+            wlc_phyreg_enter(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+            
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
