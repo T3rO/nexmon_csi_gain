@@ -116,7 +116,7 @@
 #define COREMASK                0x8a7
 #endif
 
-void force_gainlevel(phy_info_t *pi, int16 int_val)
+void force_gainlevel(struct phy_info *pi, int16 int_val)
 {
 	/* disable clip2 */
     phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 13, 0x1 << 13)
