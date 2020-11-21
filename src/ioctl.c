@@ -333,12 +333,18 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             uint8 used = 0;
             uint8 unused = 127;
 
+            uint8 gaintbl[] = {0x17, 0x17, 0x17, 0x17, 0x17, 0x17};
+            uint8 gainbitstbl[] = {4, 4, 4, 4, 4, 4};
+
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, &used);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, &unused);
+
+            wlc_phy_table_write_acphy_rp(pi, 0x44, 6, 8, 8, gaintbl);
+            wlc_phy_table_write_acphy_rp(pi, 0x45, 6, 8, 8, gainbitstbl);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
