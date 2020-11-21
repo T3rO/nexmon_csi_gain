@@ -325,38 +325,17 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 547: // set max analog gain
+        case 548: // programm gain limit tables
         {
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-            phy_utils_mod_phyreg(pi, 0x6e8, 0xff << 8, 40);
-
-            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-            wlc_phyreg_exit(pi);
-
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 548: // set max analog gain
-        {
-            wlc_phyreg_enter(pi);
-            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-            phy_reg_write(pi, 0x6e8, 0x349f);
-
-            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
-            wlc_phyreg_exit(pi);
-
-            ret = IOCTL_SUCCESS;
-            break;
-        }
-        case 549: // programm gain limit tables
-        {
-            wlc_phyreg_enter(pi);
-            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
-
-            
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, 127);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, 127);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, 127);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, 127);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, 0);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, 127);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);

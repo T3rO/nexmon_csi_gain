@@ -58,15 +58,21 @@ int
 phy_utils_read_phyreg(void *pi, int addr)
 RETURN_DUMMY
 
-AT(CHIP_VER_BCM43455c0, FW_VER_7_45_189, 0x1d4210)
-void
-wlc_phy_table_read_acphy_rp(void *pi, int id, int len, int offset, int width, void *data)
-VOID_DUMMY
-
 AT(CHIP_VER_BCM43455c0, FW_VER_7_45_189, 0x1e2dd8)
 void
 phy_utils_mod_phyreg(void *pi, unsigned short addr, unsigned short mask, unsigned short val)
 VOID_DUMMY
+
+AT(CHIP_VER_BCM43455c0, FW_VER_7_45_189, 0x1d4210)
+void
+wlc_phy_table_read_acphy_rp(void *pi, unsigned int id, unsigned int len, unsigned int offset, unsigned int width, void *data)
+VOID_DUMMY
+
+AT(CHIP_VER_BCM43455c0, FW_VER_7_45_189, 0x1d2c20)
+void
+wlc_phy_table_write_acphy_rp(void *pi, unsigned int id, unsigned int len, unsigned int offset, unsigned int width, const void *data)
+VOID_DUMMY
+
 
 #undef VOID_DUMMY
 #undef RETURN_DUMMY
