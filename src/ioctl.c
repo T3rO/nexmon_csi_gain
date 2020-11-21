@@ -119,14 +119,14 @@
 void force_gainlevel(struct phy_info *pi, int16 int_val)
 {
 	/* disable clip2 */
-    phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 13, 0x1 << 13)
+    phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 13, 0x1 << 13);
     phy_reg_write(pi, 0x6db, 0xffff);
 
 	switch (int_val) {
 	case 0:
 		printf("initgain -- adc never clips.\n");
         phy_reg_write(pi, 0x6da, 0xffff);   // clip1 Threshold
-        phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 14, 0x1 << 14) // disable clip1 detect
+        phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 14, 0x1 << 14); // disable clip1 detect
 		break;
 	case 1:
 		printf("clip hi -- adc always clips, nb never clips.\n");
