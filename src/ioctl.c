@@ -303,7 +303,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-            force_gainlevel(pi, ((int *) arg)[0]):
+            force_gainlevel(pi, ((int *) arg)[0]);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
