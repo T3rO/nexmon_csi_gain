@@ -316,7 +316,8 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-            phy_utils_mod_phyreg(pi, 0x6e8, 0xff << 8, ((int *) arg)[0]);
+            int val = 0x9f + ((((int *) arg)[0]) * 0x100);
+            phy_reg_write(pi, 0x6e8, val);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
