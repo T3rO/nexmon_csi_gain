@@ -330,12 +330,15 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, 127);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, 127);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, 127);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, 127);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, 0);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, 127);
+            uint8 used = 0;
+            uint8 unused = 127;
+
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, &unused);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, &unused);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, &unused);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, &unused);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, &used);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, &unused);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
