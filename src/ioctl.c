@@ -116,6 +116,53 @@
 #define COREMASK                0x8a7
 #endif
 
+void force_gainlevel(phy_info_t *pi, int16 int_val)
+{
+	/* disable clip2 */
+    phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 13, 0x1 << 13)
+    phy_reg_write(pi, 0x6db, 0xffff);
+
+	switch (int_val) {
+	case 0:
+		printf("initgain -- adc never clips.\n");
+        phy_reg_write(pi, 0x6da, 0xffff);   // clip1 Threshold
+        phy_utils_mod_phyreg(pi, 0x6d4, 0x1 << 14, 0x1 << 14) // disable clip1 detect
+		break;
+	case 1:
+		printf("clip hi -- adc always clips, nb never clips.\n");
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff, 0xff);
+		break;
+	case 2:
+		printf("clip md -- adc/nb always clips, w1 never clips.\n");
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff, 0x0);         // FastAgcClipCntTh Nb
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff << 8, 0xff);   // FastAgcClipCntTh W1
+		break;
+	case 3:
+		printf("clip lo -- adc/nb/w1 always clips.\n");
+		phy_utils_mod_phyreg(pi, 0x6ef, 0xff, 0x0);
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff << 8, 0x0);
+		break;
+	case 4:
+		printf("adc clip.\n");
+        phy_reg_write(pi, 0x6de, 0x0);
+        phy_reg_write(pi, 0x6df, 0x8);
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff, 0xff);
+		break;
+	case 5:
+		printf("nb clip.\n");
+        phy_reg_write(pi, 0x6e0, 0xfffe);
+        phy_reg_write(pi, 0x6e1, 0x554);
+        phy_utils_mod_phyreg(pi, 0x6ef, 0xff << 8, 0xff);
+		break;
+	case 6:
+		printf("w1 clip.\n");
+        phy_reg_write(pi, 0x6e2, 0xfffe);
+        phy_reg_write(pi, 0x6e3, 0x554);
+        phy_utils_mod_phyreg(pi, 0x6ee, 0x3, 0x0);
+		break;
+	}
+}
+
 int 
 wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
 {
@@ -251,9 +298,15 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 545: // read lna1 gain
+        case 545: // force gain level
         {
-            
+            wlc_phyreg_enter(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+            force_gainlevel(pi, ((int *) arg)[0]):
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            wlc_phyreg_exit(pi);
 
             ret = IOCTL_SUCCESS;
             break;
