@@ -241,7 +241,7 @@ get_rx_gains(struct phy_info *pi, uint8 gain_type){
     else if (gain_type == 7 || gain_type == 8){ // initGain Code from pi
 
     }
-    else if (gain_type == 9){ // low power (?)
+    else if (gain_type == 9){ // low power ?
         code_A = 0x16a;
         code_B = 0x554;
     }

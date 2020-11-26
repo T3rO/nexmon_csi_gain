@@ -271,7 +271,7 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 541: // disable agc
+        case 541: // disable agc (doesn't work)
         {
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
@@ -327,24 +327,33 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
         }
         case 548: // programm gain limit tables
         {
+            // uint8 tia[]     = {10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 40, 43};
+	        // uint8 tiabits[] = { 0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11};
+
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
 
             uint8 used = 0;
             uint8 unused = 127;
 
-            uint8 gaintbl[] = {0x17, 0x17, 0x17, 0x17, 0x17, 0x17};
-            uint8 gainbitstbl[] = {4, 4, 4, 4, 4, 4};
+            uint8 tia_gaintbl[] = {10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10};
+            uint8 tia_gainbitstbl[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+            uint8 lna1_gaintbl[] = {0xa, 0xa, 0xa, 0xa, 0xa, 0xa};
+            uint8 lna1_gainbitstbl[] = {2, 2, 2, 2, 2, 2};
 
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, &unused);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, &unused);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, &used);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, &unused);
-            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, &used);
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, &unused);
             wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, &unused);
 
-            wlc_phy_table_write_acphy_rp(pi, 0x44, 6, 8, 8, gaintbl);
-            wlc_phy_table_write_acphy_rp(pi, 0x45, 6, 8, 8, gainbitstbl);
+            wlc_phy_table_write_acphy_rp(pi, 0x44, 0xc, 32, 8, tia_gaintbl);
+            wlc_phy_table_write_acphy_rp(pi, 0x45, 0xc, 32, 8, tia_gainbitstbl);
+
+            wlc_phy_table_write_acphy_rp(pi, 0x44, 6, 8, 8, lna1_gaintbl);
+            wlc_phy_table_write_acphy_rp(pi, 0x45, 6, 8, 8, lna1_gainbitstbl);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
