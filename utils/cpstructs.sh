@@ -1,2 +1,2 @@
 #!/system/bin/sh
-cp structs.common.h ../../../../../firmwares/bcm43455c0/
+cp ~/nexmon/patches/bcm43455c0/7_45_189/nexmon_whm/other/structs.common.h ~/nexmon/firmwares/bcm43455c0/
