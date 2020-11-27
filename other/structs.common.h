@@ -354,7 +354,7 @@ struct wl_info {
 struct acphy_rxgainctrl_params {
     int8 gaintbl[7][12];
     uint8 gainbitstbl[7][12];
-}
+};
 
 /**
  *  Name might be inaccurate
