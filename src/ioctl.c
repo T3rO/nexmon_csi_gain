@@ -117,6 +117,7 @@
 #endif
 
 static const int8 lna1_default_gain_tbl[] = {-2, 4, 10, 16, 23, 28};
+static const int8 lna2_default_gain_tbl[] = {0, 0, 0, 0, 0, 0, 0};
 static const int8 tia_default_gain_tbl[] = {10, 13, 16, 19, 22, 25, 28, 31, 34, 37, 37, 37};
 static const uint8 gain_level_used = 0;
 static const uint8 gain_level_unused = 127;
@@ -176,17 +177,36 @@ void set_lna1_gain(struct phy_info *pi, uint8 gain_id){
     for (i=0; i<6; i++){
         lna1_gaintbl[i] = lna1_default_gain_tbl[gain_id];
         lna1_gainbitstbl[i] = gain_id;
-    }
 
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 0, 8, &gain_level_unused);
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 1, 8, &gain_level_unused);
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 2, 8, &gain_level_used);
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 3, 8, &gain_level_unused);
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 4, 8, &gain_level_unused);
-    // wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + 5, 8, &gain_level_unused);
+        if(i == gain_id){
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + i, 8, &gain_level_used);
+        }else{
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 8 + i, 8, &gain_level_unused);
+        }
+    }
 
     wlc_phy_table_write_acphy_rp(pi, 0x44, 6, 8, 8, lna1_gaintbl);
     wlc_phy_table_write_acphy_rp(pi, 0x45, 6, 8, 8, lna1_gainbitstbl);
+}
+
+void set_lna2_gain(struct phy_info *pi, uint8 gain_id){
+    uint8 lna2_gaintbl[] = {0, 0, 0, 0, 0, 0, 0};
+    uint8 lna2_gainbitstbl[] = {0, 0, 0, 0, 0, 0, 0};
+
+    int i;
+    for (i=0; i<6; i++){
+        lna2_gaintbl[i] = lna2_default_gain_tbl[gain_id];
+        lna2_gainbitstbl[i] = gain_id;
+
+        if(i == gain_id){
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 16 + i, 8, &gain_level_used);
+        }else{
+            wlc_phy_table_write_acphy_rp(pi, 0xb, 1, 16 + i, 8, &gain_level_unused);
+        }
+    }
+
+    wlc_phy_table_write_acphy_rp(pi, 0x44, 7, 16, 8, lna2_gaintbl);
+    wlc_phy_table_write_acphy_rp(pi, 0x45, 7, 16, 8, lna2_gainbitstbl);
 }
 
 void set_tia_gain(struct phy_info *pi, uint8 gain_id){
@@ -409,7 +429,8 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             // wlc_phy_table_write_acphy_rp(pi, 0x44, 0xc, 32, 8, tia_gaintbl);
             // wlc_phy_table_write_acphy_rp(pi, 0x45, 0xc, 32, 8, tia_gainbitstbl);
 
-            set_lna1_gain(pi, 4);
+            set_lna1_gain(pi, 5);
+            set_lna2_gain(pi, 0);
             set_tia_gain(pi, 0);
 
             wlc_phy_table_write_acphy_rp(pi, 0x44, 3, 0x70, 8, bq1_gaintbl);
@@ -440,7 +461,20 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             ret = IOCTL_SUCCESS;
             break;
         }
-        case 551: // set tia gain
+        case 551: // set lna2 gain
+        {
+            wlc_phyreg_enter(pi);
+            wlc_phy_stay_in_carriersearch_acphy(pi, 1);
+
+            set_lna2_gain(pi, ((int *) arg)[0]);
+
+            wlc_phy_stay_in_carriersearch_acphy(pi, 0);
+            wlc_phyreg_exit(pi);
+
+            ret = IOCTL_SUCCESS;
+            break;
+        }
+        case 552: // set tia gain
         {
             wlc_phyreg_enter(pi);
             wlc_phy_stay_in_carriersearch_acphy(pi, 1);
