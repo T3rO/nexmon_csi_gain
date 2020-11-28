@@ -372,11 +372,11 @@ wlc_ioctl_hook(struct wlc_info *wlc, int cmd, char *arg, int len, void *wlc_if)
             wlc_phy_table_write_acphy_rp(pi, 0x44, 3, 0x70, 8, bq1_gaintbl);
             wlc_phy_table_write_acphy_rp(pi, 0x45, 3, 0x70, 8, bq1_gainbitstbl);
 
-            wlc_phy_table_write_acphy_rp(pi, 0x44, 0xc, 0x80, 8, dvga_gaintbl);
-            wlc_phy_table_write_acphy_rp(pi, 0x45, 0xc, 0x80, 8, dvga_gainbitstbl);
+            //wlc_phy_table_write_acphy_rp(pi, 0x44, 0xc, 0x80, 8, dvga_gaintbl);
+            //wlc_phy_table_write_acphy_rp(pi, 0x45, 0xc, 0x80, 8, dvga_gainbitstbl);
 
-            memcpy(pi_ac->rxgainctrl_params.gaintbl[6], dvga_gaintbl, sizeof(pi_ac->rxgainctrl_params.gaintbl[0][0]) * 12);
-            memcpy(pi_ac->rxgainctrl_params.gainbitstbl[6], dvga_gainbitstbl, sizeof(pi_ac->rxgainctrl_params.gainbitstbl[0][0]) * 12);
+            //memcpy(pi_ac->rxgainctrl_params.gaintbl[6], dvga_gaintbl, sizeof(pi_ac->rxgainctrl_params.gaintbl[0][0]) * 12);
+            //memcpy(pi_ac->rxgainctrl_params.gainbitstbl[6], dvga_gainbitstbl, sizeof(pi_ac->rxgainctrl_params.gainbitstbl[0][0]) * 12);
 
             wlc_phy_stay_in_carriersearch_acphy(pi, 0);
             wlc_phyreg_exit(pi);
