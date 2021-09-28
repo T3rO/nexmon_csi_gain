@@ -13,3 +13,5 @@ reader = rp.CSIDataPcapReader(SOURCE_FILE, BANDWIDTH, rp.CSIDataPcapReader.CSI_T
 
 reader.write_to_csv(OUTPUT_FILE)
 ```
+
+Currently only works for chip BCM43455c0 with firmware version 7_45_189.
