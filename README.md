@@ -4,7 +4,7 @@ To see how it works, refer to comments in code. Extraction is implemented in src
 
 There are different "gain_types". In my experiments gain values only changed for gain_type = 10. This patch extracts gain values for gain_types (1,2,3,4,9 and 10).
 
-The folde rpcap_reading contains a python script to read the captured pcap files. Usage: 
+The folder pcap_reading contains a python script to read the captured pcap files. Usage: 
 
 ```python
 import read_pcap as rp
