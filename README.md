@@ -1,5 +1,7 @@
 Fork from [Nexemon CSI Extractor](https://github.com/seemoo-lab/nexmon_csi) but also extracts gain values for the different gain stages. It is also possible to limit or fix the gain stages to certain gain levels (currently only works for lna1, lna2 and tia(mixer) ).
 
+Currently only works for chip BCM43455c0 with firmware version 7_45_189.
+
 To see how it works, refer to comments in code. Extraction is implemented in src/csi_extractor.c (especially in function get_rx_gains). src/ioctl.c contains ioctls to set the gain levels. 
 
 There are different "gain_types". In my experiments gain values only changed for gain_type = 10. This patch extracts gain values for gain_types (1,2,3,4,9 and 10).
@@ -13,5 +15,3 @@ reader = rp.CSIDataPcapReader(SOURCE_FILE, BANDWIDTH, rp.CSIDataPcapReader.CSI_T
 
 reader.write_to_csv(OUTPUT_FILE)
 ```
-
-Currently only works for chip BCM43455c0 with firmware version 7_45_189.
